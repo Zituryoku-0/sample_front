@@ -1,4 +1,4 @@
-﻿# Copilot Code Review – Repository Guidelines (sample_front)
+# Copilot Code Review – Repository Guidelines (sample_front)
 
 本リポジトリは **React + TypeScript + Vite** の SPA フロントエンドです。  
 Copilot は以下の指針に基づいて Pull Request（PR）をレビューしてください。
@@ -14,6 +14,7 @@ Copilot は以下の指針に基づいて Pull Request（PR）をレビューし
 ## Non-Goals（対象外）
 - 好みのみ（明確な規約に反しない限り指摘は控える）
 - 大規模リファクタの強行（別PR提案に留める）
+- 日本語でレビューする
 
 ---
 
