@@ -40,7 +40,7 @@ Copilot は以下の指針に基づいて Pull Request（PR）をレビューし
 
 ### 4) セキュリティ
 - **XSS**：`dangerouslySetInnerHTML` は禁止（やむを得ない場合は厳格サニタイズ）。
-- **CSR/SSRの機微情報漏洩** 回避：`.env` の **VITE_** 以外はクライアントに露出させない。
+- **CSRの機微情報漏洩** 回避：`.env` の **VITE_** 以外はクライアントに露出させない。
 - **CSP/iframe sandbox/referrerPolicy** の設定検討。外部リンクは `rel="noopener"`。
 - 依存は定期更新。既知脆弱性（`npm audit`）に対応。
 
