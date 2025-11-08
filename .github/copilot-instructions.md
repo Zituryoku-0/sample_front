@@ -76,7 +76,7 @@ Copilot は以下の指針に基づいて Pull Request（PR）をレビューし
 - テスト：`src/**/*.test.tsx?`, `playwright/**`, `msw/**`
 
 ## Files to Ignore（ノイズ除外）
-- `dist/**`, `node_modules/**`, `.vite/**`, `.next/**`
+- `dist/**`, `node_modules/**`, `.vite/**`
 - 生成物、ビルド結果、ロックファイルの大量差分
 
 ---
