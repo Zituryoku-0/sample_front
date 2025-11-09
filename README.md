@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# sample_frontの使い方
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ここではsample_frontとsample_backを使ったローカル環境での起動までの手順を記載しています。
 
-Currently, two official plugins are available:
+sample_backのリポジトリは[こちら](https://github.com/Zituryoku-0/sample_back.git)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 事前準備
 
-## React Compiler
+ローカル環境で動作させるため、以下のツールを使用します。
+必要に応じてインストールしてください
+（念のためIDEも記載していますが、お好みでお使いください）。
+- [Docker(Windows)](https://docs.docker.com/desktop/setup/install/windows-install/)もしくは[Docker(Mac)](https://docs.docker.com/desktop/setup/install/mac-install/)
+- [Node.js](https://nodejs.org/ja/download)
+- [VsCode](https://code.visualstudio.com/download)
+- [IntelliJ IDEA CE](https://www.jetbrains.com/ja-jp/idea/download/?section=mac)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 1.Docker Desktopを起動する
 
-## Expanding the ESLint configuration
+Docker Desktopを起動しておけばOKです。
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 2.Dockerコンテナを起動する
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+以下のコマンドを実行してください。
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+docker compose up -d
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+もし、起動したコンテナおよび[01_init.sql](https://github.com/Zituryoku-0/sample_back/blob/main/postgres/init/01_init.sql)によって作成されたDBを確認したい場合は、以下のコマンドも実行してください。
 ```
+docker exec -it mycontainer bash
+```
+
+```
+psql -U postgres -d mydatabase
+```
+
+## 3.sample_backリポジトリを起動する
+
+[sample_back](https://github.com/Zituryoku-0/sample_back/blob/main/src/main/java/com/example/sample_back/SampleBackApplication.java)のアプリケーションを起動してください。
+
+## 4.sample_frontの起動に必要なライブラリをインストールする
+
+[sample_front](https://github.com/Zituryoku-0/sample_front)に移動し、以下のコマンドを実行してください。
+
+```
+npm install
+```
+installは、初回のみで良いです。
+
+## 5.sample_frontを起動する
+
+以下のコマンドを実行してください。
+```
+npm run dev
+```
+実行後に、URLが表示されるので、そのURLをクリックすることで起動した画面を確認できます。
+
