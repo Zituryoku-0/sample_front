@@ -10,7 +10,7 @@ sample_backのリポジトリは[こちら](https://github.com/Zituryoku-0/sampl
 必要に応じてインストールしてください。
 （念のためIDEも記載していますが、お好みでお使いください）。
 - [Node.js](https://nodejs.org/ja/download)
-- [VsCode](https://code.visualstudio.com/download)
+- [VS Code](https://code.visualstudio.com/download)
 
 事前にsample_backをクローンしてください。
 ```
