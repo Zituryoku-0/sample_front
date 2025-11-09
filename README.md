@@ -7,7 +7,7 @@ sample_backのリポジトリは[こちら](https://github.com/Zituryoku-0/sampl
 ## 事前準備
 
 ローカル環境で動作させるため、以下のツールを使用します。
-必要に応じてインストールしてください
+必要に応じてインストールしてください。
 （念のためIDEも記載していますが、お好みでお使いください）。
 - [Node.js](https://nodejs.org/ja/download)
 - [VsCode](https://code.visualstudio.com/download)
