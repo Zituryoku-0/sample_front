@@ -1,0 +1,140 @@
+﻿/* ベース: モバイル優先 */
+:root {
+  --bg: #f5f7fa;
+  --panel: #ffffff;
+  --text: #333333;
+  --muted: #555555;
+  --border: #d9dee5;
+  --primary: #0078ff;
+  --primary-hover: #005fcc;
+
+  /* 流体タイポグラフィ（スマホ→デスクトップにかけて拡大） */
+  --fs-title: clamp(20px, 4vw, 28px);
+  --fs-label: clamp(13px, 2.5vw, 14px);
+  --fs-input: clamp(14px, 3vw, 16px);
+  --fs-button: clamp(15px, 3.5vw, 16px);
+
+  /* タッチ余白（指で押しやすく） */
+  --touch: 48px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  background-color: var(--bg);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text);
+}
+
+.login-container {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 16px; /* モバイルの左右余白 */
+}
+
+.login-box {
+  width: 100%;
+  max-width: 420px;            /* タブレット/PCでも横に伸びすぎない */
+  background-color: var(--panel);
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* タイトル */
+.login-title {
+  margin: 0 0 20px;
+  text-align: center;
+  font-size: var(--fs-title);
+  letter-spacing: .02em;
+}
+
+/* フォーム */
+.login-form { display: grid; gap: 16px; }
+
+.form-group { display: grid; gap: 8px; }
+
+.form-group label {
+  font-size: var(--fs-label);
+  color: var(--muted);
+}
+
+.form-group input {
+  width: 100%;
+  height: var(--touch);                 /* タッチしやすい高さ */
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: var(--fs-input);
+  background: #fff;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.form-group input:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0,120,255,.15);
+}
+
+/* ボタン */
+.login-button {
+  width: 100%;
+  height: var(--touch);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--primary);
+  color: #fff;
+  font-size: var(--fs-button);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .02s ease-in-out;
+  touch-action: manipulation;
+}
+
+.login-button:hover { background-color: var(--primary-hover); }
+.login-button:active { transform: translateY(1px); }
+
+/* ダークモード（OS設定に追従） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --panel: #111827;
+    --text: #e5e7eb;
+    --muted: #cbd5e1;
+    --border: #273143;
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+  }
+  .login-box { box-shadow: 0 6px 18px rgba(0,0,0,0.5); }
+  .form-group input { background: #0b1220; color: var(--text); }
+}
+
+/* 低速回線/動きに弱い人向け */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+/* --- ブレークポイント（PCでの余白・タイポ最適化） --- */
+
+/* 480px以上：少し広い余白と大きめのフォーム */
+@media (min-width: 480px) {
+  .login-box { padding: 28px; }
+  .login-form { gap: 18px; }
+}
+
+/* 768px以上（タブレット横〜小型ノート） */
+@media (min-width: 768px) {
+  .login-box { padding: 32px 36px; border-radius: 16px; }
+}
+
+/* 1024px以上（デスクトップ） */
+@media (min-width: 1024px) {
+  .login-container { padding: 24px; }
+  .login-box { padding: 40px 44px; }
+}
