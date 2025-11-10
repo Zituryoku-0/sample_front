@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import "./Login.css";
+import "./login.css";
 import type { UserInfo } from '../../interface/userInfo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
