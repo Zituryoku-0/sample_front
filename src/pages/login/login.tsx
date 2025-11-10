@@ -73,7 +73,7 @@ function Login() {
     };
     return (
         <div className="login-container">
-            <div className="login-box" role="dialog" aria-labelledby="login-title" aria-modal="true">
+            <div className="login-box" aria-labelledby="login-title">
                 <h1 id="login-title" className="login-title">ログイン</h1>
 
                 <form
