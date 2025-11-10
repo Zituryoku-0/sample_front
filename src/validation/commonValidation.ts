@@ -8,4 +8,4 @@
 
 // 全角チェック用正規表現
 export const fullWidthRegex =
-    /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\u3000-\u30FF\uFF01-\uFF5E]+$/u;
+    /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3000\uFF01-\uFF5E]+$/u;
