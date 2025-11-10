@@ -3,7 +3,7 @@ import "./login.css";
 import type { UserInfo } from '../../interface/userInfo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { userSchema } from './login';
+import { userSchema, UserInfoSchema } from './login';
 import type { userFormSchema } from './login';
 
 
@@ -43,12 +43,16 @@ function Login() {
                 method: "GET",
                 credentials: "include", // ←重要
                 headers: { "Content-Type": "application/json" },
-            }).then((res) => res.json())
-                .then((data: UserInfo) => {
-                    setUserInfo(data);
-                    console.log(data); // TODO 削除する
-                });
-            console.log(response);
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const rawData = await response.json();
+            const data = UserInfoSchema.parse(rawData);
+            setUserInfo(data);
+            console.log(data); // TODO 削除する
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
