@@ -111,9 +111,11 @@ function Login() {
                             aria-describedby={errors.password ? 'password-error' : undefined}
                             {...register('password')}
                         />
-                        <p>
-                            {errors.password && errors.password.message}
-                        </p>
+                        {errors.password && (
+                            <p id="password-error" className="mt-1 text-sm text-red-600">
+                                {errors.password.message}
+                            </p>
+                        )}
                     </div>
 
                     <button type="submit" className="login-button" aria-label="ログイン">
