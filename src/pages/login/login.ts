@@ -14,7 +14,6 @@ export type userFormSchema = z.infer<typeof userSchema>;
 export const UserInfoSchema = z.object({
   userId: z.string(),
   userName: z.string(),
-  password: z.string(),
   loginCheck: z.boolean()
 });
 
