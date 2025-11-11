@@ -51,17 +51,12 @@ function Login() {
             }
 
             const rawData = await response.json();
-            console.log(rawData); // TODO 削除する
             const responseData = UserInfoSchema.parse(rawData);
             setUserInfo(responseData);
-            console.log(responseData); // TODO 削除する
         } catch (err: unknown) {
-            console.log('何かしらのエラーをcatch');
             if (err instanceof Error) {
                 setError(err.message);
-                console.log(err.message);
             } else {
-                console.log('Errorインスタンスでないエラー');
                 setError(String(err));
             }
         } finally {
@@ -69,7 +64,6 @@ function Login() {
             setLoading(false);
             setIsLogging(false);
         }
-        setIsLogging(true);
     };
     return (
         <div className="login-container">
