@@ -1,0 +1,55 @@
+﻿.site-footer {
+  width: 100%;
+  background: var(--panel, #fff);
+  border-top: 1px solid var(--border, #e0e4ea);
+}
+
+.footer-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  align-items: center;
+  gap: 8px;
+}
+
+/* モバイル：縦積み、PC：横並び */
+@media (min-width: 640px) {
+  .footer-inner {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+.copyright {
+  color: var(--muted, #666);
+  font-size: clamp(12px, 2.6vw, 14px);
+}
+
+.footer-nav {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+@media (min-width: 640px) {
+  .footer-nav { justify-content: flex-end; }
+}
+
+.footer-link {
+  font-size: clamp(12px, 2.6vw, 14px);
+  color: var(--muted, #666);
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background-color .15s ease;
+}
+
+.footer-link:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+/* ダークモードの馴染ませ */
+@media (prefers-color-scheme: dark) {
+  .footer-link:hover { background: rgba(255,255,255,0.06); }
+}
