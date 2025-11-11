@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import "./login.css";
 import type { UserInfo } from '../../interface/userInfo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userSchema, UserInfoSchema } from './login';
-import type { userFormSchema } from './login';
+import type { userFormSchema, userInfoSchema } from './login';
 
 
 
@@ -36,27 +36,32 @@ function Login() {
         }
     });
 
-    const fetchUsers = async () => {
+    const handleClick = async (data: userFormSchema) => {
         try {
             setLoading(true);
             const response = await fetch("http://localhost:8080/login", {
-                method: "GET",
-                credentials: "include", // ←重要
+                method: "POST",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: data.userId, password: data.password })
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const rawData = await response.json();
-            const data = UserInfoSchema.parse(rawData);
-            setUserInfo(data);
-            console.log(data); // TODO 削除する
+            console.log(rawData); // TODO 削除する
+            const responseData = UserInfoSchema.parse(rawData);
+            setUserInfo(responseData);
+            console.log(responseData); // TODO 削除する
         } catch (err: unknown) {
+            console.log('何かしらのエラーをcatch');
             if (err instanceof Error) {
                 setError(err.message);
+                console.log(err.message);
             } else {
+                console.log('Errorインスタンスでないエラー');
                 setError(String(err));
             }
         } finally {
@@ -64,15 +69,6 @@ function Login() {
             setLoading(false);
             setIsLogging(false);
         }
-    };
-
-    // userInfoの状態が変わることをきっかけに処理する
-    useEffect(() => {
-        fetchUsers();
-    }, [isLogging]); // 空の依存配列は、コンポーネントマウント時に一度だけ実行されることを意味します
-
-    const handleClick = (data: userFormSchema) => {
-        console.log(data);
         setIsLogging(true);
     };
     return (
