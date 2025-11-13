@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userSchema, UserInfoSchema } from './login';
 import type { userFormSchema, userInfoSchema } from './login';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -19,6 +20,7 @@ function Login() {
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [isLogging, setIsLogging] = useState(false);
+    const navigate = useNavigate();
 
     // React-hook-form
     const {
@@ -53,6 +55,7 @@ function Login() {
             const rawData = await response.json();
             const responseData = UserInfoSchema.parse(rawData);
             setUserInfo(responseData);
+            navigate('/home');
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
