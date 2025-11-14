@@ -51,11 +51,17 @@ function Login() {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
             const rawData = await response.json();
-            const responseData = UserInfoSchema.parse(rawData);
-            setUserInfo(responseData);
-            navigate('/home');
+            const responseData = UserInfoSchema.safeParse(rawData);
+            console.log(rawData);
+            if (!responseData.success) {
+                console.error("JSON の形式が不正です:", rawData.error);
+            }
+            if (rawData.loginCheck) {
+                setUserInfo(rawData);
+                navigate('/home');
+            }
+
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
