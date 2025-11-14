@@ -55,6 +55,8 @@ function Login() {
             const responseData = UserInfoSchema.safeParse(rawData);
             if (!responseData.success) {
                 console.error("JSON の形式が不正です:", rawData.error);
+                setError("サーバーからの応答形式が不正です。再度お試しください。");
+                return;
             }
             if (rawData.loginCheck) {
                 setUserInfo(rawData);
