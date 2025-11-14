@@ -53,7 +53,6 @@ function Login() {
             }
             const rawData = await response.json();
             const responseData = UserInfoSchema.safeParse(rawData);
-            console.log(rawData);
             if (!responseData.success) {
                 console.error("JSON の形式が不正です:", rawData.error);
             }
