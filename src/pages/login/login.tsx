@@ -58,8 +58,8 @@ function Login() {
                 setError("サーバーからの応答形式が不正です。再度お試しください。");
                 return;
             }
-            if (rawData.loginCheck) {
-                setUserInfo(rawData);
+            if (responseData.data.loginCheck) {
+                setUserInfo(responseData.data);
                 navigate('/home');
             }
 
