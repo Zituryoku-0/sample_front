@@ -51,11 +51,20 @@ function Login() {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
             const rawData = await response.json();
-            const responseData = UserInfoSchema.parse(rawData);
-            setUserInfo(responseData);
-            navigate('/home');
+            const responseData = UserInfoSchema.safeParse(rawData);
+            if (!responseData.success) {
+                console.error("JSON の形式が不正です:", responseData.error);
+                setError("サーバーからの応答形式が不正です。再度お試しください。");
+                return;
+            }
+            if (responseData.data.loginCheck) {
+                setUserInfo(responseData.data);
+                navigate('/home');
+            } else {
+                setError('ログインに失敗しました。ユーザーIDまたはパスワードが正しくありません。');
+            }
+
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
@@ -114,7 +123,11 @@ function Login() {
                             </p>
                         )}
                     </div>
-
+                    {error && (
+                        <div className="error-message">
+                            {error}
+                        </div>
+                    )}
                     <button type="submit" className="login-button" aria-label="ログイン">
                         ログイン
                     </button>
