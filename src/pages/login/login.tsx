@@ -123,9 +123,11 @@ function Login() {
                             </p>
                         )}
                     </div>
-                    <div>
-                        {error}
-                    </div>
+                    {error && (
+                        <div className="error-message">
+                            {error}
+                        </div>
+                    )}
                     <button type="submit" className="login-button" aria-label="ログイン">
                         ログイン
                     </button>

@@ -77,6 +77,9 @@ html, body, #root {
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(0,120,255,.15);
 }
+.error-message{
+  color: chocolate;
+}
 
 /* ボタン */
 .login-button {
