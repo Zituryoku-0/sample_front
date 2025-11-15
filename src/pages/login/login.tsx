@@ -61,6 +61,8 @@ function Login() {
             if (responseData.data.loginCheck) {
                 setUserInfo(responseData.data);
                 navigate('/home');
+            } else {
+                setError('ログインに失敗しました。ユーザーIDまたはパスワードが正しくありません。');
             }
 
         } catch (err: unknown) {
@@ -121,7 +123,9 @@ function Login() {
                             </p>
                         )}
                     </div>
-
+                    <div>
+                        {error}
+                    </div>
                     <button type="submit" className="login-button" aria-label="ログイン">
                         ログイン
                     </button>
