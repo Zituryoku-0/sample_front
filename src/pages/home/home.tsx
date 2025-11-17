@@ -22,7 +22,7 @@ export const Home = () => {
   return (
     <div>
       <p>ようこそ {user.userName} さん（ID: {user.userId}）</p>
-      <button onClick={handleClick}>ログアウト</button>
+      <button type="button" onClick={handleClick}>ログアウト</button>
     </div>
   );
 };
