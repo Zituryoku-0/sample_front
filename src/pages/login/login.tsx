@@ -135,8 +135,8 @@ function Login() {
                         ログイン
                     </button>
                 </form>
-                {loading && <Loading />}
             </div>
+        {loading && <Loading />}
         </div>
     );
 }
