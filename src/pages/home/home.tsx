@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/userInfoStore";
 import { logout } from "../../slices/auth/authSlice";
@@ -11,13 +12,20 @@ export const Home = () => {
   // storeから値を読み込む
   const user = useSelector((state: RootState) => state.auth.user);
 
+  // 未認証時のリダイレクト
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
   const handleClick = () => {
     dispatch(logout());
     navigate('/login');
   };
 
   if (!user) {
-    return <p>未ログインです。</p>;
+    return null; // リダイレクト中は何も表示しない
   };
   return (
     <div>
