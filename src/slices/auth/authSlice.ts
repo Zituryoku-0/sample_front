@@ -4,7 +4,7 @@ import type {PayloadAction} from '@reduxjs/toolkit';
 import type {UserInfo} from '../../interface/userInfo';
 
 type AuthState = {
-  user: UserInfo|null;
+  user: UserInfo | null;
 }
 
 // 初期値(ログイン時はnull)
