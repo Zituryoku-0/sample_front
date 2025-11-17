@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import "./login.css";
-import type { UserInfo } from '../../interface/userInfo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userSchema, UserInfoSchema } from './login';
-import type { userFormSchema, userInfoSchema } from './login';
+import type { userFormSchema } from './login';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../../store/userInfoStore';
+import { login } from '../../slices/auth/authSlice';
+import Loading from '../loading/loading';
 
 
 
@@ -14,13 +17,10 @@ function Login() {
     // TODOログイン処理を追加する
     // 将来的に使う予定のため、これらの変数は残しておく
     // @param userId, userPassword
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [userInfo, setUserInfo] = useState<UserInfo>();
-    const [userId, setUserId] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLogging, setIsLogging] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
 
     // React-hook-form
     const {
@@ -59,7 +59,7 @@ function Login() {
                 return;
             }
             if (responseData.data.loginCheck) {
-                setUserInfo(responseData.data);
+                dispatch(login({ userId: responseData.data.userId, userName: responseData.data.userName, loginCheck: responseData.data.loginCheck }))
                 navigate('/home');
             } else {
                 setError('ログインに失敗しました。ユーザーIDまたはパスワードが正しくありません。');
@@ -74,7 +74,6 @@ function Login() {
         } finally {
             reset();
             setLoading(false);
-            setIsLogging(false);
         }
     };
     return (
@@ -132,6 +131,7 @@ function Login() {
                         ログイン
                     </button>
                 </form>
+                {loading && <Loading />}
             </div>
         </div>
     );
