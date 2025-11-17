@@ -5,7 +5,7 @@ import type {UserInfo} from '../../interface/userInfo';
 
 type AuthState = {
   user: UserInfo | null;
-}
+};
 
 // 初期値(ログイン時はnull)
 const initialState: AuthState = {
