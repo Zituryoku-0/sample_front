@@ -59,7 +59,11 @@ function Login() {
                 return;
             }
             if (responseData.data.loginCheck) {
-                dispatch(login({ userId: responseData.data.userId, userName: responseData.data.userName, loginCheck: responseData.data.loginCheck }))
+                dispatch(login({
+                    userId: responseData.data.userId,
+                    userName: responseData.data.userName,
+                    loginCheck: responseData.data.loginCheck,
+                }))
                 navigate('/home');
             } else {
                 setError('ログインに失敗しました。ユーザーIDまたはパスワードが正しくありません。');
