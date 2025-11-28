@@ -11,11 +11,14 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@reduxjs/toolkit": "^2.10.1",
     "axios": "^1.13.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.66.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.5",
+    "redux-persist": "^6.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -24,6 +27,7 @@
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "@types/redux-persist": "^4.0.0",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
