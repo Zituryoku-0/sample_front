@@ -44,7 +44,7 @@ describe("Login Component", () => {
 
     });
 
-    it('ログイン失敗時、onErrorが呼ばれる', async() => {
+    it('ログイン失敗時、エラーメッセージが表示される', async() => {
 
         // fetchをモック
         vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
