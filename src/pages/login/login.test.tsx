@@ -76,7 +76,7 @@ describe("Login Component", () => {
         expect(data.userId).toBe("");
         expect(data.userName).toBe("");
         expect(data.loginCheck).toBe(false);
-        expect(window.location.pathname).toBe("/home");  // ログイン成功後、ホーム画面に遷移することを確認
-
+        // ログイン失敗時、エラーメッセージが表示されることを確認
+        expect(screen.getByText(/ユーザーIDまたはパスワードが正しくありません/)).toBeInTheDocument();
     })
 });
