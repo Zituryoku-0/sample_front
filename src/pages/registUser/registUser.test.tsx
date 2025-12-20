@@ -32,9 +32,16 @@ describe("RegistUser Component", () => {
         status: 200,
         json: () =>
           Promise.resolve({
-            userId: "registSuccessUser",
-            userName: "registSuccessUserName",
-            loginCheck: true,
+            responseInfo: {
+              code: "200",
+              message: "success",
+            },
+            data: {
+              userId: "registSuccessUser",
+              userName: "registSuccessUserName",
+              loginCheck: true,
+              message: "ユーザー登録に成功しました。",
+            },
           }),
       })
     );
@@ -93,9 +100,11 @@ describe("RegistUser Component", () => {
     await waitFor(() => {
       expect(screen.getByText("ユーザーIDは必須です。")).toBeInTheDocument();
       expect(screen.getByText("ユーザー名は必須です。")).toBeInTheDocument();
-      expect(screen.getByText("パスワードは必須です。")).toBeInTheDocument();
       expect(
-        screen.getByText("確認用パスワードは必須です。")
+        screen.getByText("パスワードは8文字以上で入力してください。")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("パスワード（確認）は8文字以上で入力してください。")
       ).toBeInTheDocument();
     });
   });
@@ -132,19 +141,19 @@ describe("RegistUser Component", () => {
     // パスワード不一致のエラーメッセージが表示されることを確認
     await waitFor(() => {
       expect(
-        screen.getByText("パスワードが一致しません。")
+        screen.getByText("パスワードと確認用パスワードが一致しません。")
       ).toBeInTheDocument();
     });
   });
 
-  it("ユーザー登録API失敗時、エラーメッセージが表示されることを確認", async () => {
+  it("ユーザー登録API失敗時（400エラー）、エラーメッセージが表示されることを確認", async () => {
     const userRegist = userEvent.setup();
 
     // fetchをモック
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
-        ok: true,
+        ok: false,
         status: 400,
         json: () =>
           Promise.resolve({
@@ -156,7 +165,7 @@ describe("RegistUser Component", () => {
               userId: "",
               userName: "",
               loginCheck: false,
-              message: "サンプルエラー。",
+              message: "ユーザーIDが重複しています。",
             },
           }),
       })
@@ -191,9 +200,66 @@ describe("RegistUser Component", () => {
     // APIエラーメッセージが表示されることを確認
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "サーバーからの応答形式が不正です。再度お試しください。"
-        )
+        screen.getByText("ユーザーIDが重複しています。")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("ユーザー登録API失敗時（500エラー）、エラーメッセージが表示されることを確認", async () => {
+    const userRegist = userEvent.setup();
+
+    // fetchをモック
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: () =>
+          Promise.resolve({
+            responseInfo: {
+              code: "500",
+              message: "error",
+            },
+            data: {
+              userId: "",
+              userName: "",
+              loginCheck: false,
+              message: "サーバー内部でエラーが発生しました。",
+            },
+          }),
+      })
+    );
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <RegistUser />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    await userRegist.type(
+      screen.getByPlaceholderText("ユーザーIDを入力"),
+      "registErrorUser"
+    );
+    await userRegist.type(
+      screen.getByPlaceholderText("ユーザー名を入力"),
+      "registErrorUserName"
+    );
+    await userRegist.type(
+      screen.getByPlaceholderText("パスワードを入力"),
+      "registErrorPassword"
+    );
+    await userRegist.type(
+      screen.getByPlaceholderText("確認のため再入力"),
+      "registErrorPassword"
+    );
+    await userRegist.click(screen.getByRole("button", { name: "登録" }));
+
+    // APIエラーメッセージが表示されることを確認
+    await waitFor(() => {
+      expect(
+        screen.getByText("サーバー内部でエラーが発生しました。")
       ).toBeInTheDocument();
     });
   });

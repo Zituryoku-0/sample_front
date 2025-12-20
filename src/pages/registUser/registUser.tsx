@@ -1,13 +1,14 @@
 import { useState } from "react";
 import "./registUser.css";
 import { useForm } from "react-hook-form";
-import type { registUserFormSchema } from "./registUser";
+import { RegistUserSchema, type RegistUserFormSchema } from "./registUser";
 import Loading from "../loading/loading";
 import { UserInfoSchema } from "../login/login";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/userInfoStore";
 import { login } from "../../slices/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 function RegistUser() {
   const [loading, setLoading] = useState(false);
@@ -18,11 +19,12 @@ function RegistUser() {
   const {
     register,
     handleSubmit,
-    watch,
     reset,
     formState: { errors },
-  } = useForm<registUserFormSchema>({
+  } = useForm<RegistUserFormSchema>({
+    resolver: zodResolver(RegistUserSchema),
     mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       userId: "",
       userName: "",
@@ -31,12 +33,9 @@ function RegistUser() {
     },
   });
 
-  const onSubmit = async (data: registUserFormSchema) => {
+  const onSubmit = async (data: RegistUserFormSchema) => {
     setError(null);
-    if (data.password !== data.confirmPassword) {
-      setError("パスワードが一致しません。");
-      return;
-    }
+    let responseData;
     try {
       setLoading(true);
       const response = await fetch("http://localhost:8080/registUser", {
@@ -49,11 +48,16 @@ function RegistUser() {
           password: data.password,
         }),
       });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // OKでもNGでもJSONを取得してパースする
       const rawData = await response.json();
-      const responseData = UserInfoSchema.safeParse(rawData);
+      responseData = UserInfoSchema.safeParse(rawData);
+      // フォームのリセット
+      reset();
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error! status: ${responseData.data?.responseInfo.code}`
+        );
+      }
       if (!responseData.success) {
         console.error("JSON の形式が不正です:", responseData.error);
         setError("サーバーからの応答形式が不正です。再度お試しください。");
@@ -72,20 +76,24 @@ function RegistUser() {
         setError("ユーザー登録に失敗しました。");
       }
     } catch (err: unknown) {
-      setError("ユーザー登録中にエラーが発生しました。");
       if (err instanceof Error) {
-        setError(err.message);
+        if (responseData?.data?.responseInfo.code === "400") {
+          setError(
+            responseData?.data?.data.message || "ユーザーIDが重複しています。"
+          );
+        } else {
+          setError(
+            responseData?.data?.data.message ||
+              "サーバー内部でエラーが発生しました。"
+          );
+        }
       } else {
-        setError(String(err));
+        setError("ユーザー登録中にエラーが発生しました。");
       }
     } finally {
-      reset();
       setLoading(false);
     }
   };
-
-  const pwd = watch("password");
-
   return (
     <div className="regist-container">
       <div className="regist-box" aria-labelledby="regist-title">
@@ -107,7 +115,7 @@ function RegistUser() {
               autoComplete="username"
               aria-invalid={!!errors.userId}
               aria-describedby={errors.userId ? "userId-error" : undefined}
-              {...register("userId", { required: "ユーザーIDは必須です。" })}
+              {...register("userId")}
             />
             {errors.userId && (
               <p id="userId-error" className="error-message">
@@ -125,7 +133,7 @@ function RegistUser() {
               autoComplete="name"
               aria-invalid={!!errors.userName}
               aria-describedby={errors.userName ? "userName-error" : undefined}
-              {...register("userName", { required: "ユーザー名は必須です。" })}
+              {...register("userName")}
             />
             {errors.userName && (
               <p id="userName-error" className="error-message">
@@ -143,13 +151,7 @@ function RegistUser() {
               autoComplete="new-password"
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
-              {...register("password", {
-                required: "パスワードは必須です。",
-                minLength: {
-                  value: 8,
-                  message: "パスワードは8文字以上で入力してください。",
-                },
-              })}
+              {...register("password")}
             />
             {errors.password && (
               <p id="password-error" className="error-message">
@@ -169,10 +171,7 @@ function RegistUser() {
               aria-describedby={
                 errors.confirmPassword ? "confirmPassword-error" : undefined
               }
-              {...register("confirmPassword", {
-                required: "確認用パスワードは必須です。",
-                validate: (v) => v === pwd || "パスワードが一致しません。",
-              })}
+              {...register("confirmPassword")}
             />
             {errors.confirmPassword && (
               <p id="confirmPassword-error" className="error-message">

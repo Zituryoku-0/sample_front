@@ -3,7 +3,7 @@ import "./login.css";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchema, UserInfoSchema } from "./login";
-import type { userFormSchema } from "./login";
+import type { UserFormSchema } from "./login";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/userInfoStore";
@@ -25,7 +25,7 @@ function Login() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<userFormSchema>({
+  } = useForm<UserFormSchema>({
     resolver: zodResolver(userSchema),
     mode: "onBlur", // blur時にバリデーション
     reValidateMode: "onChange", // 入力が変わる度に再チェック
@@ -35,7 +35,7 @@ function Login() {
     },
   });
 
-  const handleClick = async (data: userFormSchema) => {
+  const handleClick = async (data: UserFormSchema) => {
     try {
       setLoading(true);
       const response = await fetch("http://localhost:8080/login", {
