@@ -59,12 +59,12 @@ function RegistUser() {
         setError("サーバーからの応答形式が不正です。再度お試しください。");
         return;
       }
-      if (responseData.data.loginCheck) {
+      if (responseData.data.data.loginCheck) {
         dispatch(
           login({
-            userId: responseData.data.userId,
-            userName: responseData.data.userName,
-            loginCheck: responseData.data.loginCheck,
+            userId: responseData.data.data.userId,
+            userName: responseData.data.data.userName,
+            loginCheck: responseData.data.data.loginCheck,
           })
         );
         navigate("/home");
