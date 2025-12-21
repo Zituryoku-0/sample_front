@@ -8,9 +8,7 @@ export const RegistUserSchema = z
     password: z
       .string()
       .min(8, { message: "パスワードは8文字以上で入力してください。" }),
-    confirmPassword: z
-      .string()
-      .min(8, { message: "パスワード（確認）は8文字以上で入力してください。" }),
+    confirmPassword: z.string(),
   })
   .refine((data) => data.confirmPassword === data.password, {
     message: "パスワードと確認用パスワードが一致しません。",

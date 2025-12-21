@@ -3,12 +3,14 @@ import "./registUser.css";
 import { useForm } from "react-hook-form";
 import { RegistUserSchema, type RegistUserFormSchema } from "./registUser";
 import Loading from "../loading/loading";
-import { UserInfoSchema } from "../login/login";
+import { UserInfoSchema } from "../../lib/userApi";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/userInfoStore";
 import { login } from "../../slices/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { fetchRegistUser } from "../../lib/userApi";
+import axios, { AxiosError } from "axios";
 
 function RegistUser() {
   const [loading, setLoading] = useState(false);
@@ -38,22 +40,14 @@ function RegistUser() {
     let responseData;
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/registUser", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: data.userId,
-          userName: data.userName,
-          password: data.password,
-        }),
-      });
+      // ユーザー登録API呼び出し
+      const response = await fetchRegistUser(data);
       // OKでもNGでもJSONを取得してパースする
-      const rawData = await response.json();
-      responseData = UserInfoSchema.safeParse(rawData);
+      responseData = UserInfoSchema.safeParse(response);
       // フォームのリセット
       reset();
-      if (!response.ok) {
+      // HTTPステータスコードが2xxでない場合はエラーとする
+      if (!responseData.data?.responseInfo.code.startsWith("2")) {
         throw new Error(
           `HTTP error! status: ${responseData.data?.responseInfo.code}`
         );
@@ -75,19 +69,21 @@ function RegistUser() {
       } else {
         setError("ユーザー登録に失敗しました。");
       }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        if (responseData?.data?.responseInfo.code === "400") {
-          setError(
-            responseData?.data?.data.message || "ユーザーIDが重複しています。"
-          );
+    } catch (err: AxiosError | unknown) {
+      if (axios.isAxiosError(err)) {
+        // axios エラーの場合、err.response.data にレスポンスボディがある
+        const errorData = err.response?.data;
+        if (err.response?.status === 400) {
+          setError(errorData?.data.message || "ユーザーIDが重複しています。");
         } else {
           setError(
-            responseData?.data?.data.message ||
-              "サーバー内部でエラーが発生しました。"
+            errorData?.message || "サーバー内部でエラーが発生しました。"
           );
         }
+      } else if (err instanceof Error) {
+        setError("ユーザー登録中にエラーが発生しました。");
       } else {
+        console.error(err);
         setError("ユーザー登録中にエラーが発生しました。");
       }
     } finally {

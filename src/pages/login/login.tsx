@@ -2,13 +2,15 @@ import { useState } from "react";
 import "./login.css";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userSchema, UserInfoSchema } from "./login";
+import { userSchema } from "./login";
+import { fetchLoginUser, UserInfoSchema } from "../../lib/userApi";
 import type { UserFormSchema } from "./login";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/userInfoStore";
 import { login } from "../../slices/auth/authSlice";
 import Loading from "../loading/loading";
+import type { AxiosError } from "axios";
 
 function Login() {
   // TODOログイン処理を追加する
@@ -36,20 +38,21 @@ function Login() {
   });
 
   const handleClick = async (data: UserFormSchema) => {
+    let responseData;
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/login", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: data.userId, password: data.password }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await fetchLoginUser(data);
+      // OKでもNGでもJSONを取得してパースする
+      responseData = UserInfoSchema.safeParse(response);
+      // フォームのリセット
+      reset();
+      console.log(responseData);
+      // HTTPステータスコードが2xxでない場合はエラーとする
+      if (!responseData.data?.responseInfo.code.startsWith("2")) {
+        throw new Error(
+          `HTTP error! status: ${responseData.data?.responseInfo.code}`
+        );
       }
-      const rawData = await response.json();
-      const responseData = UserInfoSchema.safeParse(rawData);
       if (!responseData.success) {
         console.error("JSON の形式が不正です:", responseData.error);
         setError("サーバーからの応答形式が不正です。再度お試しください。");
@@ -69,14 +72,13 @@ function Login() {
           "ログインに失敗しました。ユーザーIDまたはパスワードが正しくありません。"
         );
       }
-    } catch (err: unknown) {
+    } catch (err: AxiosError | unknown) {
       if (err instanceof Error) {
-        setError(err.message);
+        setError("サーバー内部でエラーが発生しました。");
       } else {
-        setError(String(err));
+        setError("サーバー内部でエラーが発生しました。");
       }
     } finally {
-      reset();
       setLoading(false);
     }
   };

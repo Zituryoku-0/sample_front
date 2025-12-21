@@ -3,9 +3,20 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "../../store/userInfoStore";
 import userEvent from "@testing-library/user-event";
-import { describe, it, vi, afterEach, expect } from "vitest";
+import { describe, it, vi, afterEach, expect, beforeEach } from "vitest";
 import { logout } from "../../slices/auth/authSlice";
 import RegistUser from "./registUser.tsx";
+import { apiClient } from "../../lib/apiClient.ts";
+import { AxiosError } from "axios";
+
+// apiClientのモック化
+vi.mock("../../lib/apiClient", () => {
+  return {
+    apiClient: {
+      post: vi.fn(),
+    },
+  };
+});
 
 // 確定テスト後にモックやストアをリセット
 afterEach(() => {
@@ -20,31 +31,35 @@ afterEach(() => {
 });
 
 describe("RegistUser Component", () => {
+  beforeEach(() => {
+    // 各テスト前にモックをリセット
+    vi.clearAllMocks();
+  });
+
   // ここにテストケースを追加していく
   it("ユーザー登録API成功時、ホーム画面に遷移し、ユーザー情報がストアに保存されることを確認", async () => {
     const userRegist = userEvent.setup();
 
-    // fetchをモック
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({
-            responseInfo: {
-              code: "200",
-              message: "success",
-            },
-            data: {
-              userId: "registSuccessUser",
-              userName: "registSuccessUserName",
-              loginCheck: true,
-              message: "ユーザー登録に成功しました。",
-            },
-          }),
-      })
-    );
+    const mockedPost = vi.mocked(apiClient.post);
+
+    mockedPost.mockResolvedValue({
+      data: {
+        responseInfo: {
+          code: "200",
+          message: "success",
+        },
+        data: {
+          userId: "registSuccessUser",
+          userName: "registSuccessUserName",
+          loginCheck: true,
+          message: "ユーザー登録に成功しました。",
+        },
+      },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {},
+    });
 
     render(
       <Provider store={store}>
@@ -103,8 +118,42 @@ describe("RegistUser Component", () => {
       expect(
         screen.getByText("パスワードは8文字以上で入力してください。")
       ).toBeInTheDocument();
+    });
+  });
+
+  it("パスワードが8桁未満の場合、エラーメッセージが表示されることを確認", async () => {
+    const userRegist = userEvent.setup();
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <RegistUser />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    await userRegist.type(
+      screen.getByPlaceholderText("ユーザーIDを入力"),
+      "lessThan8PassUser"
+    );
+    await userRegist.type(
+      screen.getByPlaceholderText("ユーザー名を入力"),
+      "lessThan8PassUserName"
+    );
+    await userRegist.type(
+      screen.getByPlaceholderText("パスワードを入力"),
+      "abcdefg"
+    );
+    await userRegist.type(
+      screen.getByPlaceholderText("確認のため再入力"),
+      "abcdefgh"
+    );
+    await userRegist.click(screen.getByRole("button", { name: "登録" }));
+
+    // 各エラーメッセージが表示されることを確認
+    await waitFor(() => {
       expect(
-        screen.getByText("パスワード（確認）は8文字以上で入力してください。")
+        screen.getByText("パスワードは8文字以上で入力してください。")
       ).toBeInTheDocument();
     });
   });
@@ -149,26 +198,27 @@ describe("RegistUser Component", () => {
   it("ユーザー登録API失敗時（400エラー）、エラーメッセージが表示されることを確認", async () => {
     const userRegist = userEvent.setup();
 
-    // fetchをモック
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: false,
+    const mockedPost = vi.mocked(apiClient.post);
+
+    mockedPost.mockRejectedValue(
+      new AxiosError("Bad Request", "400", undefined, undefined, {
         status: 400,
-        json: () =>
-          Promise.resolve({
-            responseInfo: {
-              code: "400",
-              message: "error",
-            },
-            data: {
-              userId: "",
-              userName: "",
-              loginCheck: false,
-              message: "ユーザーIDが重複しています。",
-            },
-          }),
-      })
+        statusText: "Bad Request",
+        headers: {},
+        config: {} as any,
+        data: {
+          responseInfo: {
+            code: "400",
+            message: "Bad Request",
+          },
+          data: {
+            userId: "",
+            userName: "",
+            loginCheck: false,
+            message: "ユーザーIDが重複しています。",
+          },
+        },
+      } as any)
     );
 
     render(
@@ -208,26 +258,27 @@ describe("RegistUser Component", () => {
   it("ユーザー登録API失敗時（500エラー）、エラーメッセージが表示されることを確認", async () => {
     const userRegist = userEvent.setup();
 
-    // fetchをモック
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: false,
-        status: 400,
-        json: () =>
-          Promise.resolve({
-            responseInfo: {
-              code: "500",
-              message: "error",
-            },
-            data: {
-              userId: "",
-              userName: "",
-              loginCheck: false,
-              message: "サーバー内部でエラーが発生しました。",
-            },
-          }),
-      })
+    const mockedPost = vi.mocked(apiClient.post);
+
+    mockedPost.mockRejectedValue(
+      new AxiosError(" Internal Server Error", "500", undefined, undefined, {
+        status: 500,
+        statusText: "Internal Server Error",
+        headers: {},
+        config: {} as any,
+        data: {
+          responseInfo: {
+            code: "500",
+            message: "Internal Server Error",
+          },
+          data: {
+            userId: "",
+            userName: "",
+            loginCheck: false,
+            message: "サーバー内部でエラーが発生しました。",
+          },
+        },
+      } as any)
     );
 
     render(
