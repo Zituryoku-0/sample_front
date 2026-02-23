@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/userInfoStore";
 import { login } from "../../slices/auth/authSlice";
 import Loading from "../loading/loading";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { AxiosError } from "axios";
 
 function Login() {
@@ -47,16 +48,17 @@ function Login() {
       // フォームのリセット
       reset();
       console.log(responseData);
-      // HTTPステータスコードが2xxでない場合はエラーとする
-      if (!responseData.data?.responseInfo.code.startsWith("2")) {
-        throw new Error(
-          `HTTP error! status: ${responseData.data?.responseInfo.code}`
-        );
-      }
+      // レスポンスのsuccessがtrueでなければエラーとする
       if (!responseData.success) {
         console.error("JSON の形式が不正です:", responseData.error);
         setError("サーバーからの応答形式が不正です。再度お試しください。");
         return;
+      }
+      // HTTPステータスコードが5xxの場合はエラーとする
+      if (responseData.data?.responseInfo.code.startsWith("5")) {
+        throw new Error(
+          `HTTP error! status: ${responseData.data?.responseInfo.code}`
+        );
       }
       if (responseData.data.data.loginCheck) {
         dispatch(
