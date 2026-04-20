@@ -79,7 +79,7 @@ describe("Login Component", () => {
     await userLogin.click(screen.getByRole("button", { name: "ログイン" }));
 
     await waitFor(() => {
-      expect(window.location.pathname).toBe("/home"); // ログイン成功後、ホーム画面に遷移することを確認
+      expect(globalThis.location.pathname).toBe("/home"); // ログイン成功後、ホーム画面に遷移することを確認
       expect(store.getState().auth.user?.userId).toBe("loginSuccessUser");
       expect(store.getState().auth.user?.userName).toBe("loginSuccessUserName");
       expect(store.getState().auth.user?.loginCheck).toBe(true);
@@ -131,7 +131,7 @@ describe("Login Component", () => {
     await userLogin.click(screen.getByRole("button", { name: "ログイン" }));
 
     await waitFor(() => {
-      expect(window.location.pathname).toBe("/login"); // ログインに失敗後、ホーム画面に遷移しないことを確認
+      expect(globalThis.location.pathname).toBe("/login"); // ログインに失敗後、ホーム画面に遷移しないことを確認
       expect(store.getState().auth.user).toBe(null); // ストアにユーザー情報が保存されていないことを確認
     });
   });
@@ -183,6 +183,59 @@ describe("Login Component", () => {
     await waitFor(() => {
       expect(window.location.pathname).toBe("/login"); // ログインに失敗後、ホーム画面に遷移しないことを確認
       expect(store.getState().auth.user).toBe(null); // ストアにユーザー情報が保存されていないことを確認
+    });
+  });
+
+  it("ログイン失敗時、ホーム画面に遷移せず、ストアにユーザー情報が保存されず、エラーメッセージが表示されることを確認（404エラー）", async () => {
+    const userLogin = userEvent.setup();
+
+    const mockedPost = vi.mocked(apiClient.post);
+
+    mockedPost.mockRejectedValue(
+      new AxiosError("Not Found", "404", undefined, undefined, {
+        status: 404,
+        statusText: "Not Found",
+        headers: {},
+        config: {} as any,
+        data: {
+          responseInfo: {
+            code: "404",
+            message: "Not Found",
+          },
+          data: {
+            userId: "",
+            userName: "",
+            loginCheck: false,
+            message: "ユーザーIDまたはパスワードが正しくありません。",
+          },
+        },
+      } as any)
+    );
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Login />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    await userLogin.type(
+      screen.getByPlaceholderText("ユーザーIDを入力"),
+      "notFoundUser"
+    );
+    await userLogin.type(
+      screen.getByPlaceholderText("パスワードを入力"),
+      "notFoundPassword"
+    );
+    await userLogin.click(screen.getByRole("button", { name: "ログイン" }));
+
+    await waitFor(() => {
+      expect(window.location.pathname).toBe("/login"); // ログインに失敗後、ホーム画面に遷移しないことを確認
+      expect(store.getState().auth.user).toBe(null); // ストアにユーザー情報が保存されていないことを確認
+      expect(
+        screen.getByText("ユーザーIDまたはパスワードが正しくありません。")
+      ).toBeInTheDocument(); // 404エラーメッセージが表示されることを確認
     });
   });
 });
