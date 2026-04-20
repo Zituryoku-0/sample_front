@@ -53,10 +53,10 @@ function Login() {
         setError("サーバーからの応答形式が不正です。再度お試しください。");
         return;
       }
-      // HTTPステータスコードが5xxの場合はエラーとする
+      // レスポンスボディ内の code が5xx系の場合はエラーとする
       if (responseData.data?.responseInfo.code.startsWith("5")) {
         throw new Error(
-          `HTTP error! status: ${responseData.data?.responseInfo.code}`
+          `API response error! code: ${responseData.data?.responseInfo.code}`
         );
       }
       if (responseData.data.data.loginCheck) {
@@ -78,7 +78,9 @@ function Login() {
         const errorData = err.response?.data;
         const parsedError = UserInfoSchema.safeParse(errorData);
 
-        console.debug(errorData);
+        if (import.meta.env.DEV) {
+          console.debug(errorData);
+        }
 
         if (err.response?.status === 404) {
           setError(

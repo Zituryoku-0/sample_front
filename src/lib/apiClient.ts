@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const apiClient = axios.create({
-  baseURL: 'http://0.0.0.0:3000/',
+  baseURL: import.meta.env.VITE_API_BASE_URL_RUST,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ apiClient.interceptors.response.use(
     (error) => {
       if (error.response?.status === 401) {
         sessionStorage.removeItem('token');
-        window.location.href = '/login';
+        globalThis.location.href = '/login';
       }
       return Promise.reject(error);
     });
