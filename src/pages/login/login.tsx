@@ -10,8 +10,7 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/userInfoStore";
 import { login } from "../../slices/auth/authSlice";
 import Loading from "../loading/loading";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { AxiosError } from "axios";
+import axios from "axios";
 
 function Login() {
   // TODOログイン処理を追加する
@@ -47,7 +46,7 @@ function Login() {
       responseData = UserInfoSchema.safeParse(response);
       // フォームのリセット
       reset();
-      console.log(responseData);
+      // console.log(responseData);
       // レスポンスのsuccessがtrueでなければエラーとする
       if (!responseData.success) {
         console.error("JSON の形式が不正です:", responseData.error);
@@ -74,8 +73,27 @@ function Login() {
           "ログインに失敗しました。ユーザーIDまたはパスワードが正しくありません。"
         );
       }
-    } catch (err: AxiosError | unknown) {
-      if (err instanceof Error) {
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const errorData = err.response?.data;
+        const parsedError = UserInfoSchema.safeParse(errorData);
+
+        console.debug(errorData);
+
+        if (err.response?.status === 404) {
+          setError(
+            parsedError.success
+              ? parsedError.data.data.message
+              : "ログインに失敗しました。ユーザーIDまたはパスワードが正しくありません。"
+          );
+        } else {
+          setError(
+            parsedError.success
+              ? parsedError.data.data.message
+              : "サーバー内部でエラーが発生しました。"
+          );
+        }
+      } else if (err instanceof Error) {
         setError("サーバー内部でエラーが発生しました。");
       } else {
         setError("サーバー内部でエラーが発生しました。");
