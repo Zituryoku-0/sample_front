@@ -7,4 +7,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: echo hello world
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run test
+      - run: npm run build
