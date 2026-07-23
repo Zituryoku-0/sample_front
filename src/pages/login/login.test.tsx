@@ -206,7 +206,7 @@ describe("Login Component", () => {
             userId: "",
             userName: "",
             loginCheck: false,
-            message: "ユーザーIDまたはパスワードが正しくありません。",
+            message: "ユーザーIDまたはパスワードが正しくありませ。",
           },
         },
       } as any)
