@@ -12,6 +12,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html"],
       reportsDirectory: "coverage",
+      reportOnFailure: true,
       exclude: [
         "node_modules/",
         "src/main.tsx",
