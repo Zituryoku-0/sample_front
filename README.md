@@ -1,3 +1,5 @@
+[![sample_front](https://github.com/Zituryoku-0/sample_front/actions/workflows/sample_front.yaml/badge.svg)](https://github.com/Zituryoku-0/sample_front/actions/workflows/sample_front.yaml)
+
 # sample_frontの使い方
 
 ここではsample_frontとsample_backを使ったローカル環境での起動までの手順を記載しています。
